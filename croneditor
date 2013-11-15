@@ -45,33 +45,6 @@ _add () {
 
 	newcomm=`cat tempfile`
 
-	#dialog	--backtitle "Adding new task" \
-	#	--checklist "Choose what you want to change \n
-	#	(* * * * * by default)" 15 40 5 \
-	#	1 "minutes" off \
-	#	2 "hours" off \
-	#	3 "day of month" off \
-	#	4 "month" off \
-	#	5 "day of week" off 2>tempfile
-
-	#chdate=`cat tempfile`
-	#for d in $chdate; do
-	#  case $d in
-	#    1)
-	#      _chmin
-	#      dialog  --title "Minutes" \
-	#	      --inputbox "Enter minutes:" 2>tempfile
-	#      min=`cat tempfile`;;
-	#    2)
-	#      _chh;;
-	#    3)
-	#      _chdm;;
-	#    4)
-	#      _chm;;
-	#    5)
-	#      _chdw;;
-	#  esac
-	#done
 	crontab -l>tempfile
 	echo "$newcomm">>tempfile
 	crontab -u kirill tempfile
