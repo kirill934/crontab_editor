@@ -1,0 +1,170 @@
+#!/bin/bash
+
+#create a temp file for results
+touch tempfile
+chmod 666 tempfile
+
+_main () {
+	#show the dialog
+	dialog  --title "Crontab menu" \
+		--menu "Please choose an action:" 0 0 0 \
+		1 "Add record to crontab" \
+		2 "Edit record in crontab" \
+		3 "Delete command from crontab" 2>tempfile
+
+	res=$?
+	val=`cat tempfile`
+
+	#ok(0),cancel(1) or esc(255)
+	#echo $res
+	#1 or 2
+	#echo $result
+
+	[ "$res" -ne 0 ] && rm tempfile && clear
+
+	case $val in
+	  1)
+	    _add
+	    _main;;
+	  2)
+	    _edit
+	    _main;;
+	  3)
+	    _del
+	    _main;;
+	esac
+}
+_add () {
+	dialog 	--title "Command" \
+		--backtitle "Adding new task" \
+		--inputbox "Enter the command you want to add" 10 50 \
+		"* * * * * echo hello>>cron_res" 2> tempfile
+
+	res=$?
+	[ "$res" -ne 0 ] && _main && exit 0
+
+	newcomm=`cat tempfile`
+
+	#dialog	--backtitle "Adding new task" \
+	#	--checklist "Choose what you want to change \n
+	#	(* * * * * by default)" 15 40 5 \
+	#	1 "minutes" off \
+	#	2 "hours" off \
+	#	3 "day of month" off \
+	#	4 "month" off \
+	#	5 "day of week" off 2>tempfile
+
+	#chdate=`cat tempfile`
+	#for d in $chdate; do
+	#  case $d in
+	#    1)
+	#      _chmin
+	#      dialog  --title "Minutes" \
+	#	      --inputbox "Enter minutes:" 2>tempfile
+	#      min=`cat tempfile`;;
+	#    2)
+	#      _chh;;
+	#    3)
+	#      _chdm;;
+	#    4)
+	#      _chm;;
+	#    5)
+	#      _chdw;;
+	#  esac
+	#done
+	crontab -l>tempfile
+	echo "$newcomm">>tempfile
+	crontab -u kirill tempfile
+}
+_edit () {
+	touch tempfile2
+	crontab -l | grep -v '^#'>tempfile
+
+	items=$(awk -F" " '
+			BEGIN {ORS=""}
+			{
+				print NR" "
+				for(x=1;x<=NF;x++){
+					print $x"_"
+				}
+				print " "
+			}
+		' tempfile)
+	dialog --title "Crontab command editor" \
+		--menu "Check please" 0 0 0 \
+		$items 2> tempfile2
+	res=$?
+	[ "$res" -ne 0 ] && _main && exit 0
+
+	strnum=`cat tempfile2`
+	line=$(awk -v x=$strnum 'BEGIN {OFS=" "} NR==x {print $1,$2,$3,$4,$5,$6,$7,$8,$9}' tempfile)
+	dialog --clear --title "Crontab command editor" \
+		--inputbox "Please edit this command as you want" 0 0 "$line" 2>tempfile2
+
+	res=$?
+	[ "$res" -ne 0 ] && _main && exit 0
+
+
+	dialog --title "Confirmation" --yesno "Are you sure?" 0 0
+	case $? in
+	0)
+		newval=`cat tempfile2`
+		awk -v x=$strnum -v n="$newval" '
+			BEGIN {OFS=" "}
+			{
+				if(NR==x) {print n}
+				else {print $1,$2,$3,$4,$5,$6,$7,$8,$9 }
+			}
+			' tempfile > tempfile2
+		crontab -u kirill tempfile2
+		;;
+	1|255)  dialog 	--title "Crontab command editor"
+			--msgbox "No changes done" 0 0
+		;;
+	esac
+	crontab -l>tempfile2
+	dialog --textbox  tempfile2 0 0
+	rm tempfile2
+}
+_del () {
+	touch tempfile2
+	crontab -l | grep -v '^#'>tempfile
+
+	items=$(awk -F" " '
+			BEGIN {ORS=""}
+			{
+				print NR" "
+				for(x=1;x<=NF;x++){
+					print $x"_"
+				}
+				print " "
+			}
+		' tempfile)
+	dialog	--title "Delete crontab command" \
+		--menu "Check please" 0 0 0 \
+		$items 2> tempfile2
+	res=$?
+	[ "$res" -ne 0 ] && _main && exit 0
+	strnum=`cat tempfile2`
+
+	dialog --title "Confirmation" --yesno "Are you sure?" 0 0
+	case $? in
+	0)
+		awk -v x=$strnum '
+			BEGIN {OFS=" "}
+			{
+				if(NR!=x)
+				{print $1,$2,$3,$4,$5,$6,$7,$8,$9 }
+			}
+			' tempfile > tempfile2
+		crontab -u kirill tempfile2
+		;;
+	1|255)  dialog 	--title "Crontab command editor"
+			--msgbox "No changes done" 0 0
+		;;
+	esac
+	crontab -l>tempfile2
+	dialog --textbox  tempfile2 0 0
+	rm tempfile2
+}
+_main
