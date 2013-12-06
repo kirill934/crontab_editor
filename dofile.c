@@ -44,6 +44,7 @@ int create_file(char *name)
 		file=fopen(name,"w");
 		printf("File %s has been created \n",name);
 		fclose(file);
+		return 0;
 	}
 	else
 	{
@@ -58,6 +59,7 @@ int create_file(char *name)
 			fclose(file);
 			file=fopen(name,"w");
 			fclose(file);
+			return 0;
 		}
 		else if(c=='n')
 		{
