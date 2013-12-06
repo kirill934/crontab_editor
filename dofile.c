@@ -7,7 +7,6 @@ int delete_file(char *name);
 
 int main(int argc, char *argv[])
 {
-	//FILE *file=fopen("testfile","w");
 	if(argc!=3)
 	{
 		print_help();
@@ -26,9 +25,6 @@ int main(int argc, char *argv[])
 	else
 		print_help();
 
-	//fputc('c',file);
-	//fprintf(file,"Hello, world\n");
-	//fclose(file);
 	return 0;
 }
 void print_help(void)
@@ -40,7 +36,6 @@ void print_help(void)
 }
 int create_file(char *name)
 {
-	//printf("You wanna create this file: %s \n",name);
 	FILE *file;
 	if( !(file=fopen(name,"r")) )
 	{
@@ -79,7 +74,6 @@ int create_file(char *name)
 }
 int delete_file(char *name)
 {
-	//printf("You wanna delete this file: %s \n",name);
 	if( remove(name)!=0 )
 	{
 		printf("Error: can't delete this file \n");
