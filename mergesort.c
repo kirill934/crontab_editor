@@ -30,15 +30,13 @@ void sort(int *a, unsigned int beg, unsigned int end)
 {
 	//printf("Now sorting [%d-%d]\n",beg,end);
 	unsigned int i;
-	if(end > beg+1)
+	if(end > beg)
 	{
 		i=(beg+end)/2;
 		sort(a,beg,i);
 		sort(a,i+1,end);
 		merge(a,beg,i+1,end);
 	}
-	else
-		merge(a,beg,beg+1,end);
 }
 //merge two arrays with sorting
 void merge(int *a, unsigned int beg, unsigned int mid, unsigned int end)
