@@ -23,7 +23,7 @@ int main(void)
 		sort(arr,0,N-1);
 		t=clock()-t;
 		//printf("Time for sorting: %d(%f sec)\n",t,((float)t)/CLOCKS_PER_SEC);
-		fprintf(file,"%f\n",((float)t)/CLOCKS_PER_SEC);
+		fprintf(file,"%d\n",t);
 	}
 }
 void sort(int *a, unsigned int beg, unsigned int end)
