@@ -18,15 +18,10 @@ int main(void)
 		for(unsigned int i=0;i<N;i++)
 		{
 			arr[i]=rand() % 100;
-			//printf("%d	",arr[i]);
 		}
-		//printf("\n");
 		t=clock();
 		sort(arr,0,N-1);
 		t=clock()-t;
-		//for(int i=0;i<N;i++)
-			//printf("%d	",arr[i]);
-		//printf("\n");
 		//printf("Time for sorting: %d(%f sec)\n",t,((float)t)/CLOCKS_PER_SEC);
 		fprintf(file,"%f\n",((float)t)/CLOCKS_PER_SEC);
 	}
